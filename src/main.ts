@@ -10,6 +10,8 @@ import { ExceptionFilterInterface } from './errors/exception.filter.interface';
 import { UsersControllerInterface } from './users/user-controller.interface';
 import { UserSerivceInterface } from './users/user.service.interface';
 import { UserService } from './users/user.service';
+import { ConfigServiceInterface } from './config/config.service.interface';
+import { ConfigService } from './config/config.service';
 
 export interface BootstrapReturnInterface {
     app: App;
@@ -17,11 +19,12 @@ export interface BootstrapReturnInterface {
 }
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind): void => {
-    bind<LoggerInterface>(TYPES.LoggerInterface).to(LoggerService);
-    bind<ExceptionFilterInterface>(TYPES.ExceptionFilterInterface).to(ExceptionFilter);
-    bind<UsersControllerInterface>(TYPES.UsersControllerInterface).to(UsersController);
-    bind<UserSerivceInterface>(TYPES.UserSerivceInterface).to(UserService);
-    bind<App>(TYPES.Application).to(App);
+    bind<LoggerInterface>(TYPES.LoggerInterface).to(LoggerService).inSingletonScope();
+    bind<ExceptionFilterInterface>(TYPES.ExceptionFilterInterface).to(ExceptionFilter).inSingletonScope();
+    bind<UsersControllerInterface>(TYPES.UsersControllerInterface).to(UsersController).inSingletonScope();
+    bind<UserSerivceInterface>(TYPES.UserSerivceInterface).to(UserService).inSingletonScope();
+    bind<ConfigServiceInterface>(TYPES.ConfigServiceInterface).to(ConfigService).inSingletonScope();
+    bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 
 function bootstrap(): BootstrapReturnInterface {

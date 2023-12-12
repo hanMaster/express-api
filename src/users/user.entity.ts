@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs';
+import { genSaltSync, hash } from 'bcryptjs';
 
 export class User {
     private _password: string;
@@ -19,7 +19,8 @@ export class User {
         return this._password;
     }
 
-    public async setPassword(password: string): Promise<void> {
-        this._password = await hash(password, 10);
+    public async setPassword(password: string, saltLength: number): Promise<void> {
+        const salt = genSaltSync(saltLength);
+        this._password = await hash(password, salt);
     }
 }

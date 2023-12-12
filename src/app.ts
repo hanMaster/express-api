@@ -6,6 +6,7 @@ import { LoggerInterface } from './logger/logger.interface';
 import { UsersController } from './users/user.controller';
 import { ExceptionFilterInterface } from './errors/exception.filter.interface';
 import { TYPES } from './types';
+import { ConfigServiceInterface } from './config/config.service.interface';
 
 @injectable()
 export class App {
@@ -17,9 +18,10 @@ export class App {
         @inject(TYPES.LoggerInterface) private logger: LoggerInterface,
         @inject(TYPES.UsersControllerInterface) private userController: UsersController,
         @inject(TYPES.ExceptionFilterInterface) private exceptionFilter: ExceptionFilterInterface,
+        @inject(TYPES.ConfigServiceInterface) private configService: ConfigServiceInterface,
     ) {
         this.app = express();
-        this.port = 8000;
+        this.port = Number(this.configService.get('PORT'));
     }
 
     useMiddleware(): void {
