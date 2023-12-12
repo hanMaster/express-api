@@ -7,6 +7,7 @@ import { ConfigServiceInterface } from '../config/config.service.interface';
 import { TYPES } from '../types';
 import { UserRepositoryInterface } from './user.repository.interface';
 import { UserModel } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
 @injectable()
 export class UserService implements UserSerivceInterface {
@@ -27,7 +28,12 @@ export class UserService implements UserSerivceInterface {
         return this.userRepo.create(newUser);
     }
 
-    async validateUser(dto: UserLoginDto): Promise<boolean> {
-        return true;
+    async validateUser({ email, password }: UserLoginDto): Promise<boolean> {
+        const user = await this.userRepo.find(email);
+        if (user) {
+            const newUser = User.fromUserModel(user);
+            return newUser.validatePassword(password);
+        }
+        return false;
     }
 }
