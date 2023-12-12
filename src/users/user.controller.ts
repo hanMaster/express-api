@@ -37,9 +37,9 @@ export class UsersController extends BaseController implements UsersControllerIn
     async register({ body }: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
         const user = await this.userService.createUser(body);
         if (user === null) {
-            return next(new HttpError(422, 'Пользователь уже существует'));
+            return next(new HttpError(422, 'Пользователь уже существует', 'register'));
         }
-        this.created(res);
+        this.send(res, 201, { id: user.id, email: user.email });
     }
 
     login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {

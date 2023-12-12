@@ -11,12 +11,14 @@
         "clinic": "clinic doctor --on-port 'autocannon -m POST localhost:8000/users/register' -- node ./dist/main.js",
         "lint": "eslint ./src/**",
         "lint:fix": "eslint ./src/** --fix",
-        "build": "tsc"
+        "build": "tsc",
+        "generate": "prisma generate"
     },
     "keywords": [],
     "author": "Andrey Khalepov",
     "license": "ISC",
     "dependencies": {
+        "@prisma/client": "^5.7.0",
         "bcryptjs": "^2.4.3",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",
@@ -36,6 +38,7 @@
         "eslint-plugin-prettier": "^5.0.1",
         "nodemon": "^3.0.2",
         "prettier": "^3.1.1",
+        "prisma": "^5.7.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.3.3"
     }
