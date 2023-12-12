@@ -9,30 +9,30 @@ import { UsersControllerInterface } from './users.interface';
 
 @injectable()
 export class UsersController extends BaseController implements UsersControllerInterface {
-   constructor(@inject(TYPES.LoggerInterface) private readonly loggerService: LoggerInterface) {
-      super(loggerService);
-      const userRoutes: ControllerRouteInterface[] = [
-         {
-            path: '/register',
-            method: 'post',
-            func: this.register,
-         },
-         {
-            path: '/login',
-            method: 'post',
-            func: this.login,
-         },
-      ];
-      this.bindRoutes(userRoutes);
-   }
+    constructor(@inject(TYPES.LoggerInterface) private readonly loggerService: LoggerInterface) {
+        super(loggerService);
+        const userRoutes: ControllerRouteInterface[] = [
+            {
+                path: '/register',
+                method: 'post',
+                func: this.register,
+            },
+            {
+                path: '/login',
+                method: 'post',
+                func: this.login,
+            },
+        ];
+        this.bindRoutes(userRoutes);
+    }
 
-   register(req: Request, res: Response, next: NextFunction): void {
-      console.log('debug');
+    register(req: Request, res: Response, next: NextFunction): void {
+        console.log('debug');
 
-      this.ok(res, 'register');
-   }
+        this.ok(res, 'register');
+    }
 
-   login(req: Request, res: Response, next: NextFunction): void {
-      next(new HttpError(401, 'Ошибка авторизации', 'login'));
-   }
+    login(req: Request, res: Response, next: NextFunction): void {
+        next(new HttpError(401, 'Ошибка авторизации', 'login'));
+    }
 }
