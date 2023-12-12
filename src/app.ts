@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { Server } from 'http';
 
 import { LoggerInterface } from './logger/logger.interface';
-import { UsersController } from './users/users.controller';
+import { UsersController } from './users/user.controller';
 import { ExceptionFilterInterface } from './errors/exception.filter.interface';
 import { TYPES } from './types';
 
@@ -22,6 +22,10 @@ export class App {
         this.port = 8000;
     }
 
+    useMiddleware(): void {
+        this.app.use(express.json());
+    }
+
     useRoutes(): void {
         this.app.use('/users', this.userController.router);
     }
@@ -31,6 +35,7 @@ export class App {
     }
 
     public async init(): Promise<void> {
+        this.useMiddleware();
         this.useRoutes();
         this.useExceptionFilters();
         this.server = this.app.listen(this.port);
