@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+import { sign } from 'jsonwebtoken';
 import { LoggerInterface } from '../logger/logger.interface';
 import { BaseController } from '../common/base.controller';
 import { ControllerRouteInterface } from '../common/route.interface';
@@ -10,12 +11,16 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserSerivceInterface } from './user.service.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
+import { ConfigService } from '../config/config.service';
+import { UserInfoDto } from './dto/user-info.dto';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UsersController extends BaseController implements UsersControllerInterface {
     constructor(
         @inject(TYPES.LoggerInterface) private readonly loggerService: LoggerInterface,
         @inject(TYPES.UserSerivceInterface) private readonly userService: UserSerivceInterface,
+        @inject(TYPES.ConfigServiceInterface) private readonly configService: ConfigService,
     ) {
         super(loggerService);
         const userRoutes: ControllerRouteInterface[] = [
@@ -30,6 +35,12 @@ export class UsersController extends BaseController implements UsersControllerIn
                 method: 'post',
                 func: this.login,
                 middlewares: [new ValidateMiddleware(UserLoginDto)],
+            },
+            {
+                path: '/info',
+                method: 'get',
+                func: this.info,
+                middlewares: [new AuthGuard()],
             },
         ];
         this.bindRoutes(userRoutes);
@@ -48,6 +59,33 @@ export class UsersController extends BaseController implements UsersControllerIn
         if (!isValid) {
             return next(new HttpError(401, 'Ошибка авторизации', 'login'));
         }
-        this.ok(res, { authenticated: true });
+        const jwt = await this.signJwt(body.email, this.configService.get('JWT_SECRET'));
+        this.ok(res, { authenticated: true, jwt });
+    }
+
+    async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
+        const dbUser = await this.userService.getUserInfo(user);
+        this.ok(res, { id: dbUser?.id, name: dbUser?.name, email: dbUser?.email });
+    }
+
+    private async signJwt(email: string, secret: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            sign(
+                {
+                    email,
+                    iat: Math.floor(Date.now() / 1000),
+                },
+                secret,
+                {
+                    algorithm: 'HS256',
+                },
+                (err, token) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(token as string);
+                },
+            );
+        });
     }
 }

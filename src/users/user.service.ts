@@ -36,4 +36,8 @@ export class UserService implements UserSerivceInterface {
         }
         return false;
     }
+
+    async getUserInfo(email: string): Promise<UserModel | null> {
+        return this.userRepo.find(email);
+    }
 }

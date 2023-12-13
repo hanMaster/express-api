@@ -8,6 +8,7 @@ import { ExceptionFilterInterface } from './errors/exception.filter.interface';
 import { TYPES } from './types';
 import { ConfigServiceInterface } from './config/config.service.interface';
 import { PrismaService } from './database/prisma.service';
+import { AuthMiddleware } from './common/auth.middleware';
 
 @injectable()
 export class App {
@@ -28,6 +29,8 @@ export class App {
 
     useMiddleware(): void {
         this.app.use(express.json());
+        const authMiddleware = new AuthMiddleware(this.configService.get('JWT_SECRET'));
+        this.app.use(authMiddleware.execute.bind(authMiddleware));
     }
 
     useRoutes(): void {
